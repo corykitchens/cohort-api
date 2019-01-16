@@ -1,26 +1,42 @@
-# Welcome to Serverless!
-#
-# This file is the main config file for your service.
-# It's very minimal at this point and uses default values.
-# You can always add more config options for more control.
-# We've included some commented out config examples here.
-# Just uncomment any of them to get that config option.
-#
-# For full config options, check the docs:
-#    docs.serverless.com
-#
-# Happy Coding!
-
 service: cohort-api # NOTE: update this with your service name
 provider:
   name: aws
   runtime: nodejs8.10
   region: us-west-2
   stage: dev
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+      - "dynamodb:List*"
+      - "dynamodb:DescribeReservedCapacity*"
+      - "dynamodb:DescribeLimits"
+      - "dynamodb:DescribeTimeToLive"
+      Resource: "*"
+    - Effect: "Allow"
+      Action:
+      - "dynamodb:BatchGet*"
+      - "dynamodb:DescribeStream"
+      - "dynamodb:DescribeTable"
+      - "dynamodb:Get*"
+      - "dynamodb:Query"
+      - "dynamodb:Scan"
+      - "dynamodb:BatchWrite*"
+      - "dynamodb:CreateTable"
+      - "dynamodb:Delete*"
+      - "dynamodb:Update*"
+      - "dynamodb:PutItem"
+      Resource: 
+        Fn::Join:
+          - ""
+          - - "arn:aws:dynamodb:us-west-2:*:table/"
+            - Ref: "TriviaQuestionsTable"
+
+
 
 package:
   include:
     - trivia.js
+    - db/*
   exlude:
     - .git/**
 
@@ -30,9 +46,27 @@ functions:
     name: GetTriviaQuestion
     memorySize: 512
     timeout: 100
+    environment:
+      DB_ENDPOINT: { "Ref": "TriviaQuestionsTable"}
     events:
       - http:
           path: api/random
           method: get
+
+resources:
+  Resources:
+    TriviaQuestionsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: triviaQuestionID
+            AttributeType: S
+        KeySchema:
+          - AttributeName: triviaQuestionID
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+  
 plugins:
   - serverless-offline
