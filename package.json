@@ -1,0 +1,24 @@
+{
+  "name": "cohort-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "trivia.js",
+  "scripts": {
+    "dev": "sls offline start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/corykitchens/cohort-api.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/corykitchens/cohort-api/issues"
+  },
+  "homepage": "https://github.com/corykitchens/cohort-api#readme",
+  "devDependencies": {
+    "aws-sdk": "^2.388.0",
+    "serverless-offline": "^4.0.0"
+  }
+}
