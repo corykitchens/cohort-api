@@ -1,4 +1,5 @@
 'use strict';
+const qs = require('querystring');
 const db = require('./db');
 
 const getRandomIndex = (arrLength = 1) => {
@@ -17,7 +18,7 @@ const getQuestion = async () => {
   }
 }
 
-module.exports.lambda_handler =  async (evt, ctx) => {
+module.exports.get =  async (evt, ctx) => {
   const question = await getQuestion();
   if (question) {
     return {
@@ -31,6 +32,32 @@ module.exports.lambda_handler =  async (evt, ctx) => {
         message: 'Error no question retrieved'
       })
     }
+  }  
+}
+
+const parseBodyFromRequest = (str = "") => {
+  return qs.parse(str);
+}
+module.exports.create = async (evt, ctx) => {
+  try {
+    const urlEncodedBody = parseBodyFromRequest(evt.body); 
+    const res = await db.insert(urlEncodedBody);
+    if (res) {
+      return {
+        statusCode: 200,
+        body: JSON.stringify(res)
+      }
+    }
+  } catch (error) {
+    console.log(error);
+    return {
+      statusCode: 500,
+      body: JSON.stringify(error)
+    }
   }
   
+  return {
+    statusCode: 200,
+    body: JSON.stringify(evt.body)
+  }
 }

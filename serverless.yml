@@ -42,7 +42,7 @@ package:
 
 functions:
   get_trivia_question:
-    handler: trivia.lambda_handler
+    handler: trivia.get
     name: GetTriviaQuestion
     memorySize: 512
     timeout: 100
@@ -50,8 +50,19 @@ functions:
       DB_ENDPOINT: { "Ref": "TriviaQuestionsTable"}
     events:
       - http:
-          path: api/random
+          path: api/trivia/question/random
           method: get
+  create_new_trivia_question:
+    handler: trivia.create
+    name: CreateTriviaQuestion
+    memorySize: 512
+    timeout: 100
+    environment:
+      DB_ENDPOINT: { "Ref": "TriviaQuestionsTable"}
+    events:
+      - http:
+          path: api/trivia/question
+          method: post
 
 resources:
   Resources:
